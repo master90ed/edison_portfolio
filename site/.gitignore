@@ -1,0 +1,23 @@
+# Python
+*.py
+__pycache__/
+*.pyc
+
+# Dev tools
+*.pbix
+*.xlsx
+*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# JDK / Java
+oracleJdk*/
+*.jmod
+*.jar
+*.dll
+*.exe
+
+# Large generated files
+*.zip
