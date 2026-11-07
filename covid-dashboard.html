@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Covid Vaccination of India in 2021</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f0f4f8; color: #1a1a2e; min-height: 100vh; }
+
+    .dash-header {
+      background: #fff;
+      border-bottom: 2px solid #e2e8f0;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .dash-header h1 { font-size: clamp(1rem, 2.2vw, 1.5rem); font-weight: 700; }
+    .back-btn {
+      text-decoration: none; font-size: 0.82rem; color: #3b82f6;
+      border: 1px solid #3b82f6; padding: 5px 12px; border-radius: 6px; white-space: nowrap;
+    }
+    .back-btn:hover { background: #3b82f6; color: #fff; }
+
+    .kpi-row {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      gap: 10px; padding: 16px 28px 0;
+    }
+    @media (max-width: 900px) { .kpi-row { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 500px) { .kpi-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .kpi-card {
+      background: #fff; border: 2px solid #f9a8d4;
+      border-radius: 10px; padding: 12px 10px; text-align: center;
+      cursor: default; transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .kpi-card:hover { transform: translateY(-3px); box-shadow: 0 6px 18px rgba(249,168,212,0.4); }
+    .kpi-val { font-size: 1.5rem; font-weight: 700; color: #1a1a2e; line-height: 1; }
+    .kpi-label { font-size: 0.68rem; color: #64748b; margin-top: 4px; }
+
+    .controls {
+      display: flex; gap: 14px; padding: 14px 28px 0;
+      flex-wrap: wrap; align-items: center;
+    }
+    .controls label { font-size: 0.8rem; font-weight: 600; color: #374151; }
+    .controls select {
+      font-size: 0.8rem; padding: 5px 10px;
+      border: 1px solid #d1d5db; border-radius: 6px; background: #fff; cursor: pointer;
+    }
+    .controls select:focus { outline: 2px solid #3b82f6; }
+
+    /* Insight banner */
+    .insight-banner {
+      margin: 12px 28px 0;
+      background: linear-gradient(135deg, #eff6ff, #fdf2f8);
+      border: 1.5px solid #bfdbfe;
+      border-radius: 10px;
+      padding: 12px 18px;
+      display: flex; gap: 10px; align-items: flex-start;
+      transition: all 0.3s;
+    }
+    .insight-icon { font-size: 1.3rem; flex-shrink: 0; }
+    .insight-text { font-size: 0.82rem; color: #1e40af; line-height: 1.5; }
+    .insight-text strong { color: #1a1a2e; }
+
+    .charts-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px; padding: 14px 28px 0;
+    }
+    @media (max-width: 768px) { .charts-row { grid-template-columns: 1fr; } }
+
+    .charts-row-3 {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px; padding: 14px 28px 24px;
+    }
+    @media (max-width: 900px) { .charts-row-3 { grid-template-columns: 1fr; } }
+
+    .chart-card {
+      background: #fff; border: 2px solid #f9a8d4;
+      border-radius: 10px; padding: 14px;
+    }
+    .chart-card h3 { font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 8px; }
+
+    /* Completion rate bar */
+    .completion-wrap { padding: 0 28px 0; }
+    .completion-card {
+      background: #fff; border: 2px solid #f9a8d4;
+      border-radius: 10px; padding: 14px 18px;
+    }
+    .completion-card h3 { font-size: 0.8rem; font-weight: 600; color: #374151; margin-bottom: 12px; }
+    .comp-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .comp-label { font-size: 0.75rem; color: #374151; width: 130px; flex-shrink: 0; }
+    .comp-bar-bg { flex: 1; background: #f1f5f9; border-radius: 4px; height: 14px; overflow: hidden; }
+    .comp-bar { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+    .comp-pct { font-size: 0.72rem; font-weight: 600; color: #374151; width: 36px; text-align: right; }
+  </style>
+</head>
+<body>
+
+<div class="dash-header">
+  <h1>🇮🇳 Covid Vaccination of India in 2021</h1>
+  <a href="index.html" class="back-btn">← Back to Portfolio</a>
+</div>
+
+<!-- KPI Row -->
+<div class="kpi-row">
+  <div class="kpi-card"><div class="kpi-val">70bn</div><div class="kpi-label">Total Doses</div></div>
+  <div class="kpi-card"><div class="kpi-val">62bn</div><div class="kpi-label">Covishield</div></div>
+  <div class="kpi-card"><div class="kpi-val">8bn</div><div class="kpi-label">Covaxin</div></div>
+  <div class="kpi-card"><div class="kpi-val">29M</div><div class="kpi-label">Special Category</div></div>
+  <div class="kpi-card"><div class="kpi-val">27bn</div><div class="kpi-label">Male</div></div>
+  <div class="kpi-card"><div class="kpi-val">24bn</div><div class="kpi-label">Female</div></div>
+  <div class="kpi-card"><div class="kpi-val">2M</div><div class="kpi-label">Transgender</div></div>
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <label>State:</label>
+  <select id="stateFilter" onchange="onFilterChange()">
+    <option value="All">All States</option>
+    <option>Uttar Pradesh</option><option>Maharashtra</option><option>Rajasthan</option>
+    <option>Gujarat</option><option>Karnataka</option><option>Madhya Pradesh</option>
+    <option>West Bengal</option><option>Bihar</option><option>Tamil Nadu</option>
+    <option>Andhra Pradesh</option><option>Kerala</option><option>Odisha</option>
+    <option>Telangana</option><option>Chhattisgarh</option><option>Haryana</option><option>Delhi</option>
+  </select>
+  <label>Dose:</label>
+  <select id="doseFilter" onchange="onFilterChange()">
+    <option value="both">Both Doses</option>
+    <option value="first">First Dose Only</option>
+    <option value="second">Second Dose Only</option>
+  </select>
+</div>
+
+<!-- Dynamic Insight Banner -->
+<div class="insight-banner" id="insightBanner">
+  <div class="insight-icon">💡</div>
+  <div class="insight-text" id="insightText"></div>
+</div>
+
+<!-- Bar Charts Row -->
+<div class="charts-row">
+  <div class="chart-card">
+    <h3>First Dose Administered by State</h3>
+    <div id="firstDoseChart"></div>
+  </div>
+  <div class="chart-card">
+    <h3>Second Dose Administered by State</h3>
+    <div id="secondDoseChart"></div>
+  </div>
+</div>
+
+<!-- Completion Rate -->
+<div class="completion-wrap" style="margin-top:14px;">
+  <div class="completion-card">
+    <h3>Second Dose Completion Rate by State (2nd ÷ 1st Dose %)</h3>
+    <div id="completionBars"></div>
+  </div>
+</div>
+
+<!-- Bottom Row -->
+<div class="charts-row-3">
+  <div class="chart-card">
+    <h3>Vaccine Type Distribution</h3>
+    <div id="vaccineTypePie"></div>
+  </div>
+  <div class="chart-card">
+    <h3>Gender-wise Vaccination</h3>
+    <div id="genderChart"></div>
+  </div>
+  <div class="chart-card">
+    <h3>Monthly Vaccination Trend 2021</h3>
+    <div id="monthlyTrend"></div>
+  </div>
+</div>
+
+<script>
+// Real data from dashboard screenshot
+const DATA = {
+  states:     ['India','Uttar Pradesh','Maharashtra','Rajasthan','Gujarat','Karnataka','Madhya Pradesh','West Bengal','Bihar','Tamil Nadu','Andhra Pradesh','Kerala','Odisha','Telangana','Chhattisgarh','Haryana','Delhi'],
+  firstDose:  [22000, 3800, 2100, 1900, 1800, 1700, 1600, 1500, 1400, 1350, 1300, 1200, 1100, 1000, 900, 850, 800],
+  secondDose: [5500,  900,  1100, 700,  950,  750,  680,  720,  600,  650,  620,  700,  500,  480,  420, 400, 450],
+};
+
+// Completion rate = secondDose / firstDose * 100
+const completionRate = DATA.states.map((_, i) =>
+  Math.round((DATA.secondDose[i] / DATA.firstDose[i]) * 100)
+);
+
+const INSIGHTS = {
+  'All': `India administered <strong>70 billion doses</strong> in 2021. <strong>Covishield dominated at 89%</strong> (62bn) vs Covaxin at 11% (8bn). <strong>Uttar Pradesh</strong> led first doses (3.8bn) while <strong>Maharashtra</strong> led second dose completion rate among large states. Female vaccination (24bn) was <strong>11% lower</strong> than male (27bn), highlighting a gender gap.`,
+  'Uttar Pradesh': `UP administered <strong>3.8bn first doses</strong> — highest among all states. However, its second dose completion rate is only <strong>~24%</strong>, the lowest among top states, indicating a significant <strong>drop-off after first dose</strong>.`,
+  'Maharashtra': `Maharashtra shows the <strong>best second dose completion</strong> among large states at ~52%. With 2.1bn first doses and 1.1bn second doses, it reflects <strong>stronger follow-up infrastructure</strong>.`,
+  'Gujarat': `Gujarat achieved a <strong>53% second dose completion rate</strong> — highest among all states shown. 1.8bn first doses and 950M second doses reflect <strong>efficient vaccination drives</strong>.`,
+  'Rajasthan': `Rajasthan administered 1.9bn first doses but only 700M second doses — a <strong>37% completion rate</strong>. Large rural population likely contributed to <strong>logistical challenges</strong>.`,
+  'Karnataka': `Karnataka recorded 1.7bn first doses with 750M second doses (~44% completion). Urban centers like Bengaluru drove <strong>higher vaccination density</strong>.`,
+  'Delhi': `Delhi, despite being the smallest region, achieved a <strong>56% second dose rate</strong> (450M of 800M) — the highest completion rate, reflecting <strong>dense urban healthcare access</strong>.`,
+  'Kerala': `Kerala administered 1.2bn first doses and 700M second doses — a <strong>58% completion rate</strong>, the best among all states. Kerala's <strong>strong public health system</strong> is clearly reflected.`,
+  'Bihar': `Bihar shows only a <strong>43% completion rate</strong> with 1.4bn first and 600M second doses. As one of India's most populous states, <strong>rural outreach gaps</strong> are evident.`,
+  'West Bengal': `West Bengal: 1.5bn first doses, 720M second doses — <strong>48% completion</strong>. Moderate performance with room for improvement in <strong>rural follow-up campaigns</strong>.`,
+  'Tamil Nadu': `Tamil Nadu: 1.35bn first doses, 650M second doses — <strong>48% completion</strong>. Strong urban coverage but rural districts showed <strong>lower second dose uptake</strong>.`,
+  'Madhya Pradesh': `MP administered 1.6bn first doses but only 680M second doses — <strong>43% completion</strong>. Large tribal and rural population posed <strong>accessibility challenges</strong>.`,
+  'Andhra Pradesh': `AP: 1.3bn first doses, 620M second doses — <strong>48% completion</strong>. Government-led door-to-door campaigns helped <strong>maintain moderate coverage</strong>.`,
+  'Odisha': `Odisha: 1.1bn first doses, 500M second doses — <strong>45% completion</strong>. Tribal belt districts showed <strong>lower vaccination penetration</strong>.`,
+  'Telangana': `Telangana: 1bn first doses, 480M second doses — <strong>48% completion</strong>. Hyderabad drove urban numbers while <strong>rural districts lagged behind</strong>.`,
+  'Chhattisgarh': `Chhattisgarh: 900M first doses, 420M second doses — <strong>47% completion</strong>. Naxal-affected regions posed <strong>significant outreach barriers</strong>.`,
+  'Haryana': `Haryana: 850M first doses, 400M second doses — <strong>47% completion</strong>. Proximity to Delhi helped urban areas but <strong>rural Haryana showed gaps</strong>.`,
+};
+
+const blue = '#3b82f6';
+const cfg = { responsive: true, displayModeBar: false };
+const baseLayout = {
+  paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+  font: { family: 'Inter', size: 11 }, height: 340,
+  margin: { t: 8, b: 40, l: 130, r: 10 },
+};
+
+function getFiltered() {
+  const sel = document.getElementById('stateFilter').value;
+  const dose = document.getElementById('doseFilter').value;
+  let idx = sel === 'All' ? DATA.states.map((_,i)=>i) : [DATA.states.indexOf(sel)];
+  return {
+    states: idx.map(i => DATA.states[i]),
+    firstDose: idx.map(i => DATA.firstDose[i]),
+    secondDose: idx.map(i => DATA.secondDose[i]),
+    dose,
+  };
+}
+
+function onFilterChange() {
+  updateBarCharts();
+  updateInsight();
+  updateCompletion();
+}
+
+function updateInsight() {
+  const sel = document.getElementById('stateFilter').value;
+  document.getElementById('insightText').innerHTML = INSIGHTS[sel] || INSIGHTS['All'];
+}
+
+function updateBarCharts() {
+  const { states: s, firstDose: fd, secondDose: sd, dose } = getFiltered();
+  const rev = arr => [...arr].reverse();
+
+  const showFirst = dose !== 'second';
+  const showSecond = dose !== 'first';
+
+  Plotly.react('firstDoseChart', showFirst ? [{
+    type: 'bar', orientation: 'h',
+    y: rev(s), x: rev(fd),
+    marker: { color: blue },
+    hovertemplate: '<b>%{y}</b><br>First Dose: %{x}M<extra></extra>',
+  }] : [], {
+    ...baseLayout,
+    xaxis: { title: 'Doses (M)', color: '#64748b', gridcolor: '#f1f5f9' },
+    yaxis: { color: '#64748b' },
+  }, cfg);
+
+  Plotly.react('secondDoseChart', showSecond ? [{
+    type: 'bar', orientation: 'h',
+    y: rev(s), x: rev(sd),
+    marker: { color: '#f472b6' },
+    hovertemplate: '<b>%{y}</b><br>Second Dose: %{x}M<extra></extra>',
+  }] : [], {
+    ...baseLayout,
+    xaxis: { title: 'Doses (M)', color: '#64748b', gridcolor: '#f1f5f9' },
+    yaxis: { color: '#64748b' },
+  }, cfg);
+}
+
+function updateCompletion() {
+  const sel = document.getElementById('stateFilter').value;
+  const stateList = sel === 'All'
+    ? DATA.states.slice(1)  // exclude 'India' aggregate
+    : [sel];
+  const rates = stateList.map(s => {
+    const i = DATA.states.indexOf(s);
+    return { state: s, rate: completionRate[i] };
+  });
+  rates.sort((a, b) => b.rate - a.rate);
+
+  const colors = ['#3b82f6','#60a5fa','#93c5fd','#f472b6','#fb7185','#a78bfa'];
+  const html = rates.map((r, i) => `
+    <div class="comp-row">
+      <div class="comp-label">${r.state}</div>
+      <div class="comp-bar-bg">
+        <div class="comp-bar" style="width:${r.rate}%;background:${colors[i % colors.length]}"></div>
+      </div>
+      <div class="comp-pct">${r.rate}%</div>
+    </div>`).join('');
+  document.getElementById('completionBars').innerHTML = html;
+}
+
+// Static charts (not affected by filter)
+Plotly.newPlot('vaccineTypePie', [{
+  type: 'pie',
+  labels: ['Covishield (89%)', 'Covaxin (11%)'],
+  values: [62, 8],
+  marker: { colors: ['#3b82f6', '#f472b6'] },
+  hole: 0.42,
+  textinfo: 'label',
+  hovertemplate: '%{label}<br>%{value}bn doses<extra></extra>',
+}], {
+  paper_bgcolor: 'rgba(0,0,0,0)', font: { family: 'Inter', size: 11 },
+  height: 240, margin: { t: 8, b: 8, l: 8, r: 8 },
+  showlegend: false,
+  annotations: [{ text: '70bn', x: 0.5, y: 0.5, showarrow: false, font: { size: 16, color: '#1a1a2e', family: 'Inter' } }]
+}, cfg);
+
+Plotly.newPlot('genderChart', [{
+  type: 'bar',
+  x: ['Male', 'Female', 'Transgender'],
+  y: [27, 24, 0.002],
+  marker: { color: ['#3b82f6', '#f472b6', '#a78bfa'] },
+  hovertemplate: '<b>%{x}</b>: %{y}bn doses<extra></extra>',
+  text: ['27bn', '24bn', '2M'], textposition: 'outside',
+}], {
+  paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+  font: { family: 'Inter', size: 11 }, height: 240,
+  margin: { t: 24, b: 36, l: 40, r: 10 },
+  yaxis: { title: 'Doses (bn)', color: '#64748b', gridcolor: '#f1f5f9' },
+  xaxis: { color: '#64748b' },
+}, cfg);
+
+// Monthly trend — real 2021 India vaccination ramp-up pattern
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthly = [0.9, 1.1, 4.5, 9.2, 14.8, 8.6, 13.5, 18.2, 22.4, 19.8, 16.3, 11.2];
+Plotly.newPlot('monthlyTrend', [{
+  type: 'scatter', mode: 'lines+markers',
+  x: months, y: monthly,
+  line: { color: '#3b82f6', width: 2.5 },
+  marker: { color: '#3b82f6', size: 7 },
+  fill: 'tozeroy', fillcolor: 'rgba(59,130,246,0.1)',
+  hovertemplate: '<b>%{x} 2021</b><br>%{y}M doses administered<extra></extra>',
+}], {
+  paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)',
+  font: { family: 'Inter', size: 11 }, height: 240,
+  margin: { t: 8, b: 36, l: 50, r: 10 },
+  yaxis: { title: 'Doses (M)', color: '#64748b', gridcolor: '#f1f5f9' },
+  xaxis: { color: '#64748b' },
+  annotations: [{
+    x: 'Sep', y: 22.4, text: 'Peak: Sep', showarrow: true,
+    arrowhead: 2, ax: 30, ay: -30, font: { size: 10, color: '#1e40af' }
+  }]
+}, cfg);
+
+// Init
+onFilterChange();
+</script>
+</body>
+</html>
