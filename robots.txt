@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://master90ed.github.io/edison_portfolio/sitemap.xml
